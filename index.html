@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Timefit - Organize seu tempo, alcance mais!</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="container">
+        <h1>Timefit</h1>
+        <div class="slogan">Organize seu tempo, alcance mais!</div>
+        <div class="controls">
+            <div class="control-group">
+                <label for="start-time-input">Hora de Início Geral</label>
+                <input type="time" id="start-time-input" value="09:00">
+            </div>
+            <div class="control-group" style="flex-grow: 1;">
+                <label for="new-task-input">Nova Tarefa (ou cole várias linhas)</label>
+                <input type="text" id="new-task-input" placeholder="Ex: Planejar o dia">
+            </div>
+            <button id="add-task-btn">Adicionar</button>
+        </div>
+        <div class="task-list-header">
+            <div class="col-check"></div>
+            <div class="col-time">Hora de Início</div>
+            <div class="col-task">Tarefa</div>
+            <div class="col-duration">Duração</div>
+            <div class="col-delete"></div>
+        </div>
+        <ul id="task-list">
+            <!-- As tarefas serão inseridas aqui via JS -->
+        </ul>
+        <div class="footer">
+            Horário de Término: <span id="total-end-time">09:00</span>
+        </div>
+    </div>
+    <script src="main.js"></script>
+</body>
+
+</html>
