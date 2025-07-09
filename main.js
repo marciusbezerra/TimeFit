@@ -9,6 +9,32 @@ document.addEventListener('DOMContentLoaded', () => {
     let tasks = [];
     let draggedItem = null;
 
+    // Carregar tarefas do localStorage
+    function loadTasks() {
+        const saved = localStorage.getItem('timefit-tasks');
+        if (saved) {
+            try {
+                tasks = JSON.parse(saved);
+            } catch {
+                tasks = [];
+            }
+        }
+    }
+
+    // Salvar tarefas no localStorage
+    function saveTasks() {
+        localStorage.setItem('timefit-tasks', JSON.stringify(tasks));
+    }
+
+    // Carregar hora inicial do localStorage
+    function loadStartTime() {
+        const saved = localStorage.getItem('timefit-start-time');
+        if (saved) startTimeInput.value = saved;
+    }
+    function saveStartTime() {
+        localStorage.setItem('timefit-start-time', startTimeInput.value);
+    }
+
     const parseTimeToMinutes = (timeStr) => {
         if (!timeStr) return 0;
         const [hours, minutes] = timeStr.split(':').map(Number);
@@ -45,6 +71,7 @@ document.addEventListener('DOMContentLoaded', () => {
             currentTime += task.duration;
         });
         totalEndTimeDisplay.textContent = formatMinutesToTime(currentTime);
+        saveTasks();
         if (activeTaskId) {
             const newActiveItem = taskList.querySelector(`.task-item[data-id="${activeTaskId}"]`);
             if (newActiveItem) {
@@ -143,7 +170,10 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         newTaskInput.value = '';
     });
-    startTimeInput.addEventListener('change', renderAndRecalculate);
+    startTimeInput.addEventListener('change', () => {
+        renderAndRecalculate();
+        saveStartTime();
+    });
     taskList.addEventListener('dragstart', (e) => {
         draggedItem = e.target;
         setTimeout(() => draggedItem.classList.add('dragging'), 0);
@@ -179,8 +209,14 @@ document.addEventListener('DOMContentLoaded', () => {
         }, { offset: Number.NEGATIVE_INFINITY }).element;
     }
     // Inicialização
-    addTask("Reunião de alinhamento", 30);
-    addTask("Desenvolver feature X", 120);
-    addTask("Pausa para o café", 15);
-    addTask("Revisar Pull Request", 45);
+    loadTasks();
+    loadStartTime();
+    if (tasks.length === 0) {
+        addTask("Reunião de alinhamento", 30);
+        addTask("Desenvolver feature X", 120);
+        addTask("Pausa para o café", 15);
+        addTask("Revisar Pull Request", 45);
+    } else {
+        renderAndRecalculate();
+    }
 });
