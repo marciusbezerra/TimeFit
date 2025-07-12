@@ -1,6 +1,5 @@
 // Timefit - Organize seu tempo, alcance mais!
 document.addEventListener('DOMContentLoaded', () => {
-    const startTimeInput = document.getElementById('start-time-input');
     const newTaskInput = document.getElementById('new-task-input');
     const addTaskBtn = document.getElementById('add-task-btn');
     const taskList = document.getElementById('task-list');
@@ -26,13 +25,30 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem('timefit-tasks', JSON.stringify(tasks));
     }
 
+    // Preenche o select de hora de início geral
+    function fillStartTimeSelect() {
+        const select = document.getElementById('start-time-select');
+        select.innerHTML = '';
+        for (let h = 0; h < 24; h++) {
+            for (let m = 0; m < 60; m += 15) {
+                const value = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+                const option = document.createElement('option');
+                option.value = value;
+                option.textContent = value;
+                select.appendChild(option);
+            }
+        }
+    }
+
     // Carregar hora inicial do localStorage
     function loadStartTime() {
         const saved = localStorage.getItem('timefit-start-time');
-        if (saved) startTimeInput.value = saved;
+        const select = document.getElementById('start-time-select');
+        if (saved && select) select.value = saved;
     }
     function saveStartTime() {
-        localStorage.setItem('timefit-start-time', startTimeInput.value);
+        const select = document.getElementById('start-time-select');
+        if (select) localStorage.setItem('timefit-start-time', select.value);
     }
 
     const parseTimeToMinutes = (timeStr) => {
@@ -53,18 +69,24 @@ document.addEventListener('DOMContentLoaded', () => {
         const activeElementClass = activeElement.className;
 
         taskList.innerHTML = '';
-        let currentTime = parseTimeToMinutes(startTimeInput.value);
+        let currentTime = parseTimeToMinutes(document.getElementById('start-time-select').value);
         tasks.forEach((task, index) => {
             const taskStartTime = currentTime;
             const li = document.createElement('li');
             li.className = `task-item ${task.completed ? 'completed' : ''}`;
             li.setAttribute('draggable', 'true');
             li.dataset.id = task.id;
+            // Cria select para duração
+            let durationOptions = '';
+            for (let min = 15; min <= 240; min += 15) {
+                const label = `${String(Math.floor(min/60)).padStart(2, '0')}:${String(min%60).padStart(2, '0')}`;
+                durationOptions += `<option value="${min}"${task.duration === min ? ' selected' : ''}>${label}</option>`;
+            }
             li.innerHTML = `
                 <input type="checkbox" class="complete-check" ${task.completed ? 'checked' : ''} aria-label="Marcar como concluída">
                 <span class="start-time">${formatMinutesToTime(taskStartTime)}</span>
                 <span class="task-text" contenteditable="true" spellcheck="false">${task.text}</span>
-                <input type="time" class="duration-input" value="${formatMinutesToTime(task.duration)}">
+                <select class="duration-select">${durationOptions}</select>
                 <button class="delete-btn" aria-label="Excluir tarefa">×</button>
             `;
             taskList.appendChild(li);
@@ -131,8 +153,8 @@ document.addEventListener('DOMContentLoaded', () => {
             task.completed = target.checked;
             renderAndRecalculate();
         }
-        if (target.classList.contains('duration-input')) {
-            task.duration = parseTimeToMinutes(target.value);
+        if (target.classList.contains('duration-select')) {
+            task.duration = parseInt(target.value, 10);
             renderAndRecalculate();
         }
     });
@@ -170,7 +192,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         newTaskInput.value = '';
     });
-    startTimeInput.addEventListener('change', () => {
+    document.getElementById('start-time-select').addEventListener('change', () => {
         renderAndRecalculate();
         saveStartTime();
     });
@@ -209,6 +231,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }, { offset: Number.NEGATIVE_INFINITY }).element;
     }
     // Inicialização
+    fillStartTimeSelect();
     loadTasks();
     loadStartTime();
     if (tasks.length === 0) {

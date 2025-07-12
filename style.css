@@ -51,7 +51,7 @@ h1 {
     font-weight: 500;
 }
 
-.control-group input {
+.control-group input, .control-group select {
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 5px;
@@ -131,14 +131,14 @@ h1 {
     cursor: pointer;
     justify-self: center;
 }
-.task-item .start-time, .task-item .duration-input {
+.task-item .start-time, .task-item .duration-select {
     font-family: 'Courier New', Courier, monospace;
     text-align: center;
     border: 1px solid transparent;
     padding: 5px;
     border-radius: 4px;
 }
-.task-item .duration-input {
+.task-item .duration-select {
     border-color: #ddd;
     width: 80px;
 }
